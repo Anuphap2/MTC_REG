@@ -22,7 +22,7 @@ function Footer()
             <li class="ms-3">
                 <span class="text-muted" style="font-size: 0.9rem;">สร้างและพัฒนาโดย </span>
                 <a class="text-decoration-none fw-bold text-primary ms-1">
-                    <i class="bi bi-facebook"></i> นายอานุภาพ ศรเทียน
+                    นายอานุภาพ ศรเทียน
                 </a>
             </li>
         </ul>
