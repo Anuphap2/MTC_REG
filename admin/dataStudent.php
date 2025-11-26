@@ -87,6 +87,7 @@ if (isset($_GET['round'])) {
 
 // --- เริ่มส่วน HTML ---
 include '../components/head.php';
+include '../components/navbar.php';
 ?>
 
 <!doctype html>
@@ -95,56 +96,7 @@ include '../components/head.php';
 <head>
     <?php Head_admin(); ?>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css">
-    <style>
-        /* CSS Responsive Sidebar */
-        @media (min-width: 768px) {
-            .sidebar {
-                width: 250px;
-                height: 100vh;
-                position: fixed;
-                top: 0;
-                left: 0;
-                z-index: 100;
-                visibility: visible !important;
-                transform: none !important;
-                padding-top: 0;
-            }
-
-            .main-content {
-                margin-left: 250px;
-                width: calc(100% - 250px);
-            }
-
-            .btn-toggle-sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            .main-content {
-                width: 100%;
-                margin-left: 0;
-            }
-
-            .sidebar {
-                background-color: var(--bs-primary);
-            }
-        }
-
-        .nav-link {
-            color: white !important;
-            padding: 15px 20px;
-        }
-
-        .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .main-content {
-            padding: 20px;
-            transition: margin-left 0.3s;
-        }
-    </style>
+   
 </head>
 
 <body>
@@ -161,41 +113,7 @@ include '../components/head.php';
 
     <div class="d-flex">
 
-        <nav class="sidebar bg-primary offcanvas-md offcanvas-start" tabindex="-1" id="sidebarMenu"
-            aria-labelledby="sidebarMenuLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-white" id="sidebarMenuLabel">เมนูหลัก</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
-                    data-bs-target="#sidebarMenu" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body p-0">
-                <ul class="nav flex-column w-100 mt-md-4 mt-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="main.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="dataStudent.php">ข้อมูลผู้สมัคร</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="addSubject.php">เพิ่มข้อมูลสาขาวิชา</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="addRound.php">จัดการรอบเปิดรับสมัคร</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="addNews.php">จัดการข่าวสาร</a>
-                    </li>
-                    <?php if (isset($result['status']) && $result['status'] == 1) { ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="addUser.php">เพิ่มเจ้าหน้าที่</a>
-                        </li>
-                    <?php } ?>
-                    <li class="nav-item mt-auto">
-                        <a href="system/logout.php" class="nav-link text-danger bg-light">ออกจากระบบ</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+       <?php Navbar_admin(); ?>
 
         <div class="main-content">
             <div class="container-fluid">

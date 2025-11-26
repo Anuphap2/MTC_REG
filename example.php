@@ -4,24 +4,10 @@ include 'components/head.php';
 include 'components/footer.php';
 require_once 'config/db.php';
 include 'components/sessionShow.php';
+
+// ลบโค้ด SQL ดึงรูปภาพ Background ออก เพราะหน้านี้ไม่ได้ใช้
+// ลบ session user_log ออกเพื่อให้เหมือนหน้า index (ถ้าต้องการ)
 unset($_SESSION['user_log']);
-$conn = connectDB();
-$now = date("Y-m-d");
-$sql = "SELECT * FROM round WHERE :now BETWEEN date_round AND end_round"; #curdate() 
-$stmt = $conn->prepare($sql);
-$stmt->bindParam(':now', $now);
-$stmt->execute();
-$round = $stmt->fetch(PDO::FETCH_ASSOC);
-
-$sql = "SELECT * FROM images ORDER BY id DESC LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$image = $stmt->fetch(PDO::FETCH_ASSOC);
-
-$backgroundImage = '';
-if ($image) {
-    $backgroundImage = "url('admin/uploads/" . $image['filename'] . "')";
-}
 ?>
 
 <!doctype html>
@@ -29,115 +15,82 @@ if ($image) {
 
 <head>
     <?php Head(); ?>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .pdf-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+
+        .pdf-frame {
+            width: 100%;
+            height: 80vh;
+            /* สูง 80% ของหน้าจอ */
+            border: none;
+        }
+
+        .btn-back {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background-color: #e9ecef;
+            transform: translateX(-5px);
+        }
+    </style>
 </head>
-<style>
-    #pdf-viewer {
-        width: 100%;
-        height: 600px;
-        overflow: auto;
-        border: 1px solid #ccc;
-    }
-
-    canvas {
-        display: block;
-        margin: 10px auto;
-    }
-
-    .image-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 0;
-        padding-top: 46.15%;
-        /* 1300px / 600px = 2.1667, 100 / 2.1667 = 46.15% */
-        position: relative;
-        background-image:
-            <?= $backgroundImage ?>
-        ;
-        background-size: contain;
-        /* ปรับขนาดภาพให้พอดีกับ container */
-        background-position: center;
-        background-repeat: no-repeat;
-        /* เพิ่มสีพื้นหลังเพื่อดูภาพได้ชัด */
-    }
-
-    @media (max-width: 1300px) {
-        .image-container {
-            padding-top: 46.15%;
-            /* คงไว้เพื่อรักษาสัดส่วน 16:9 */
-        }
-    }
-
-    @media (max-width: 768px) {
-        .image-container {
-            padding-top: 75%;
-            /* ปรับให้เหมาะสมกับขนาดหน้าจอเล็ก */
-        }
-    }
-</style>
 
 <body>
-    <!-- header start  -->
     <?php showStatus(); ?>
-    <header>
+
+    <header class="sticky-top shadow-sm">
         <?php Navbar(); ?>
     </header>
-    <!-- header end  -->
-    <main class="container">
-        <div class="d-flex justify-content-center mt-3">
-            <img src="image/logo/logo.png" alt="Logo" width="250" height="250" class="align-text-top">
+
+    <main class="container py-5">
+
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">คู่มือการสมัครเรียน</h3>
+                    <p class="text-muted mb-0">ขั้นตอนและวิธีการใช้งานระบบรับสมัครออนไลน์</p>
+                </div>
+            </div>
+
+            <a href="image/คู่มือ.pdf" download class="btn btn-primary rounded-pill shadow-sm px-4">
+                <i class="bi bi-download me-2"></i> ดาวน์โหลดไฟล์ PDF
+            </a>
         </div>
-        <h1 class="text-center mt-3">คู่มือการสมัคร</h1>
-        <div id="pdf-viewer"></div>
-        <script>
-            var url = 'image/คู่มือ.pdf';  // URL ของไฟล์ PDF ที่ต้องการแสดง
 
-            var pdfjsLib = window['pdfjsLib'];
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        <div class="pdf-card">
+            <object data="image/คู่มือ.pdf" type="application/pdf" class="pdf-frame">
+                <div class="d-flex flex-column justify-content-center align-items-center h-100 bg-light">
+                    <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 4rem;"></i>
+                    <h5 class="mt-3">เบราว์เซอร์ของคุณไม่รองรับการแสดงตัวอย่าง PDF</h5>
+                    <p class="text-muted">กรุณาดาวน์โหลดไฟล์เพื่อเปิดอ่าน</p>
+                    <a href="image/คู่มือ.pdf" class="btn btn-outline-primary">ดาวน์โหลดคู่มือ</a>
+                </div>
+            </object>
+        </div>
 
-            // โหลด PDF ไฟล์
-            var loadingTask = pdfjsLib.getDocument(url);
-            loadingTask.promise.then(function (pdf) {
-                var totalPages = pdf.numPages; // เก็บจำนวนหน้าทั้งหมดของ PDF
-
-                // ลูปเรนเดอร์แต่ละหน้า
-                for (var pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
-                    renderPage(pageNumber, pdf);
-                }
-
-                function renderPage(pageNum, pdf) {
-                    pdf.getPage(pageNum).then(function (page) {
-                        var scale = 1;
-                        var viewport = page.getViewport({ scale: scale });
-
-                        // สร้าง canvas สำหรับหน้า PDF แต่ละหน้า
-                        var canvas = document.createElement('canvas');
-                        var context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-
-                        // ใส่ canvas ไว้ใน div
-                        document.getElementById('pdf-viewer').appendChild(canvas);
-
-                        // เรนเดอร์ PDF ลงใน canvas
-                        var renderContext = {
-                            canvasContext: context,
-                            viewport: viewport
-                        };
-                        page.render(renderContext);
-                    });
-                }
-            });
-        </script>
     </main>
 
     <footer>
         <?php Footer() ?>
     </footer>
-    <script src="css/bootstrap/js/bootstrap.min.js"></script>
+    <script src="css/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
